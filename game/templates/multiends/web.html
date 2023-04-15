@@ -4,14 +4,15 @@
     <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
     <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/game.css' %}">
-    <srcipt src="{% static 'js/dist/game.js' %}"></script>
+    <script src="{% static 'js/dist/game.js' %}"></script>
 </head>
 
-<boby style="margin: 0">
+<body style="margin: 0">
     <div id="web_game_12345678"></div>
-    <srcipt>
-        $(document).ready(function()){
+    <script>
+        $(document).ready(function(){
             let web_game = WebGame("web_game_12345678");
-        };
-    </srcipt>
-</boby>
+        });
+    </script>
+</body>
+
