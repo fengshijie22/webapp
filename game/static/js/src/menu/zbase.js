@@ -24,10 +24,3 @@ class WebGameMenu {
         this.$settings = this.$settings.find('.web_game_menu_field_item_settings');
     }
 }
-class WebGame {
-    constructor(id) {
-        this.id = id;
-        this.$web_game = $('#' + id);
-        this.menu = new WebGameMenu(this);
-    }
-}
