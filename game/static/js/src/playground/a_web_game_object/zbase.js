@@ -18,6 +18,7 @@ class WebGameObject {
     }
 
     destroy() { // 删除该物体
+        this.on_destroy();
         for (let i = 0; i < WEB_GAME_OBJECTS.length; i ++ ) {
             if (WEB_GAME_OBJECTS[i] === this) {
                 WEB_GAME_OBJECTS.splice(i, 1);

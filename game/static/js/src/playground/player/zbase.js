@@ -17,6 +17,8 @@ class Player extends WebGameObject {
         this.is_me = is_me;
         this.eps = 0.1;
         this.friction = 0.9;
+        this.spent_time = 0;
+        this.flag_die = false;
 
         this.cur_skill = null;
     }
@@ -37,14 +39,16 @@ class Player extends WebGameObject {
             return false;
         });
         this.playground.game_map.$canvas.mousedown(function(e) {
-            if (e.which === 3) {
-                outer.move_to(e.clientX, e.clientY);
-            } else if (e.which === 1) {
-                if (outer.cur_skill === "fireball") {
-                    outer.shoot_fireball(e.clientX, e.clientY);
-                }
+            if (!outer.flag_die) {
+                if (e.which === 3) {
+                    outer.move_to(e.clientX, e.clientY);
+                } else if (e.which === 1) {
+                    if (outer.spent_time > 5 && outer.cur_skill === "fireball") {
+                        outer.shoot_fireball(e.clientX, e.clientY);
+                    }
 
-                outer.cur_skill = null;
+                    outer.cur_skill = null;
+                }
             }
         });
 
@@ -76,18 +80,7 @@ class Player extends WebGameObject {
     }
 
     is_attacked(angle, damage) {
-        this.radius -= damage;
-        if (this.radius < this.playground.height * 0.01) {
-            this.destroy();
-            return false;
-        }
-        this.damage_x = Math.cos(angle);
-        this.damage_y = Math.sin(angle);
-        this.damage_speed = damage * 100;
-        this.speed *= 1.2;
-        // console.log(this.damage_speed);
-
-        for (let i = 0; i < 10 + Math.random() * 5; i ++ ) {
+        for (let i = 0; i < 20 + Math.random() * 5; i ++ ) {
             let x = this.x;
             let y = this.y;
             let radius = this.radius * Math.random() * 0.1;
@@ -96,9 +89,20 @@ class Player extends WebGameObject {
             let vy = Math.sin(angle);
             let color = this.color;
             let speed = this.speed * 10;
-            let move_length = this.radius * Math.random() * 10;
+            let move_length = this.radius * Math.random() * 5;
             new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
         }
+        this.radius -= damage;
+        if (this.radius < this.playground.height * 0.01) {
+            this.destroy();
+            this.flag_die = true;
+            return false;
+        }
+        this.damage_x = Math.cos(angle);
+        this.damage_y = Math.sin(angle);
+        this.damage_speed = damage * 100;
+        this.speed *= 1.2;
+        // console.log(this.damage_speed);
     }
 
     move_to(tx, ty) {
@@ -109,6 +113,13 @@ class Player extends WebGameObject {
     }
 
     update() {
+        this.spent_time += this.timedelta / 1000;
+        if (this.spent_time > 5 && Math.random() < 1 / 180.0 && !this.flag_die) {
+            let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+            if (this !== player && !player.flag_die)
+                this.shoot_fireball(player.x, player.y);
+        }
+
         if (this.damage_speed > 10) {
             this.vx = this.vy = 0;
             this.move_length = 0;
